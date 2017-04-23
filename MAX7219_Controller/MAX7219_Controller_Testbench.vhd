@@ -41,8 +41,8 @@ ARCHITECTURE behavior OF MAX7219_Controller_Testbench IS
  
     COMPONENT MAX7219_Controller
     PORT(
-         Address_in : IN  std_logic_vector(3 downto 0);
-         Data_in : IN  std_logic_vector(3 downto 0);
+         Address_in : IN  std_logic_vector(7 downto 0);
+         Data_in : IN  std_logic_vector(7 downto 0);
          Clk : IN  std_logic;
          Start : IN  std_logic;
          Dout : OUT  std_logic;
@@ -52,8 +52,8 @@ ARCHITECTURE behavior OF MAX7219_Controller_Testbench IS
     
 
    --Inputs
-   signal Address_in : std_logic_vector(3 downto 0) := (others => '0');
-   signal Data_in : std_logic_vector(3 downto 0) := (others => '0');
+   signal Address_in : std_logic_vector(7 downto 0) := (others => '0');
+   signal Data_in : std_logic_vector(7 downto 0) := (others => '0');
    signal Clk : std_logic := '0';
    signal Start : std_logic := '0';
 
@@ -92,8 +92,8 @@ BEGIN
       -- hold reset state for 100 ns.
 		wait for 21 ns;	
 
-		Address_in <= "0101";
-		Data_in <= "1011";
+		Address_in <= "11010101";
+		Data_in <= "10011011";
 		wait for 10 ns;
 		
 		Start <= '1';

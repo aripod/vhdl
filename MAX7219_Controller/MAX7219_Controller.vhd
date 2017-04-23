@@ -6,8 +6,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity MAX7219_Controller is
-    Port ( Address_in : in  STD_LOGIC_VECTOR (3 downto 0);
-           Data_in : in  STD_LOGIC_VECTOR (3 downto 0);
+    Port ( Address_in : in  STD_LOGIC_VECTOR (7 downto 0);
+           Data_in : in  STD_LOGIC_VECTOR (7 downto 0);
            Clk : in  STD_LOGIC;
 			  Start : in  STD_LOGIC;
            Dout : out  STD_LOGIC;
@@ -27,8 +27,8 @@ begin
 		begin
 		if(clk'event and clk='1') then
 			if(Start = '1') then
-				data(3 downto 0) <= Data_in;
-				data(11 downto 8) <= Address_in;
+				data(7 downto 0) <= Data_in;
+				data(15 downto 8) <= Address_in;
 				count <= (others=>'0');
 				count_enable <= '1';
 			else
