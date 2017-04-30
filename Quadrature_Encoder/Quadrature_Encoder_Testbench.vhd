@@ -10,6 +10,8 @@ ARCHITECTURE behavior OF Quadrature_Encoder_Testbench IS
  
     COMPONENT Quadrature_Encoder
     PORT(
+         clk : IN  std_logic;
+         reset : IN  std_logic;
          A : IN  std_logic;
          B : IN  std_logic;
          Up : OUT  std_logic;
@@ -19,72 +21,65 @@ ARCHITECTURE behavior OF Quadrature_Encoder_Testbench IS
     
 
    --Inputs
+   signal clk : std_logic := '0';
+   signal reset : std_logic := '0';
    signal A : std_logic := '0';
    signal B : std_logic := '0';
 
  	--Outputs
    signal Up : std_logic;
    signal Down : std_logic;
-   -- No clocks detected in port list. Replace <clock> below with 
-   -- appropriate port name 
- 
-   
+
+   -- Clock period definitions
+   constant clk_period : time := 10 ns;
  
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
    uut: Quadrature_Encoder PORT MAP (
+          clk => clk,
+          reset => reset,
           A => A,
           B => B,
           Up => Up,
           Down => Down
         );
+
+   -- Clock process definitions
+   clk_process :process
+   begin
+		clk <= '0';
+		wait for clk_period/2;
+		clk <= '1';
+		wait for clk_period/2;
+   end process;
  
 
    -- Stimulus process
    stim_proc: process
    begin		
-      -- hold reset state for 100 ns.
-      wait for 20 ns;	
-	
+		wait for 25 ns;
+		
+		reset <= '0';
+		
 		-- Clockwise
-		A <= '0';
-		B <= '0';
-		wait for 20 ns;
 		A <= '1';
 		wait for 10 ns;
 		B <= '1';
-		wait for 10 ns;
-		A <= '0';
-		wait for 10 ns;
-		B <= '0';
-		
-		wait for 50 ns;
-		
-		-- Clockwise
-		A <= '0';
-		B <= '0';
 		wait for 20 ns;
-		A <= '1';
-		wait for 10 ns;
-		B <= '1';
-		wait for 10 ns;
 		A <= '0';
 		wait for 10 ns;
 		B <= '0';
-		
-		wait for 50 ns;
+		wait for 40 ns;
 		
 		-- Counter-Clockwise
-		A <= '0';
 		B <= '1';
-		wait for 20 ns;
-		A <= '1';
 		wait for 10 ns;
+		A <= '1';
+		wait for 20 ns;
 		B <= '0';
 		wait for 10 ns;
 		A <= '0';
-		
 
       wait;
    end process;
