@@ -25,3 +25,5 @@ iseconfig/
 *.xrpt
 isim/
 xst/
+*.xwbt
+*.ncd
