@@ -27,3 +27,7 @@ isim/
 xst/
 *.xwbt
 *.ncd
+*.bgn
+*.bit
+*.bld
+*.ngd
