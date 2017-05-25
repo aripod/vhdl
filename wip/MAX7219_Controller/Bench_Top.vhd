@@ -1,6 +1,6 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
-
+ 
 ENTITY Bench_Top IS
 END Bench_Top;
  
@@ -13,7 +13,8 @@ ARCHITECTURE behavior OF Bench_Top IS
          clk : IN  std_logic;
          D1 : OUT  std_logic_vector(3 downto 0);
          D2 : OUT  std_logic_vector(3 downto 0);
-			Carry : OUT std_logic
+         D3 : OUT  std_logic_vector(3 downto 0);
+			D4 : OUT  std_logic_vector(3 downto 0)
         );
     END COMPONENT;
     
@@ -24,7 +25,8 @@ ARCHITECTURE behavior OF Bench_Top IS
  	--Outputs
    signal D1 : std_logic_vector(3 downto 0);
    signal D2 : std_logic_vector(3 downto 0);
-	signal Carry : std_logic;
+   signal D3 : std_logic_vector(3 downto 0);
+   signal D4 : std_logic_vector(3 downto 0);
 
    -- Clock period definitions
    constant clk_period : time := 10 ns;
@@ -36,7 +38,8 @@ BEGIN
           clk => clk,
           D1 => D1,
           D2 => D2,
-			 Carry => Carry
+          D3 => D3,
+			 D4 => D4
         );
 
    -- Clock process definitions
@@ -52,8 +55,6 @@ BEGIN
    -- Stimulus process
    stim_proc: process
    begin		
-      -- hold reset state for 100 ns.
-     
 
       wait;
    end process;
