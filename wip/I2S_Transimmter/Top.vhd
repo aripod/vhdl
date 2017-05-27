@@ -11,29 +11,35 @@ end Top;
 
 architecture Behavioral of Top is
 	
-	signal wsd, wsp : STD_LOGIC :='0';
+	signal wss, wsp : STD_LOGIC :='0';	--wws:word select sync. wsp: word select pulse.
 	signal input_data : STD_LOGIC_VECTOR (15 downto 0) := (others=>'0');
+	signal shift_data : STD_LOGIC_VECTOR (15 downto 0) := (others=>'0');
 	signal delay : STD_LOGIC_VECTOR (1 downto 0);
 	
 begin
 	
-	input_data <= data(31 downto 16) when wsd='1' else data(15 downto 0);
+	input_data <= data(31 downto 16) when wss='1' else data(15 downto 0);
 	
-	sync_edge_detection: process(clk)
+	sync_edge_detector_ws: process(clk)
 		begin
-		if(falling_edge(clk)) then
+		if(rising_edge(clk)) then
 			delay(0) <= delay(1);
 			delay(1) <= ws;
 		end if;
 	end process;
-	wsd <= delay(0);
+	wss <= delay(1);
 	wsp <= delay(1) xor delay(0);
 	
-	Inst_Shift_Register_ParallelLoad: entity work.Shift_Register_ParallelLoad PORT MAP(
-		clk => clk,
-		pl => wsp,
-		data => input_data,
-		sd => sd
-	);
+	process(clk)
+		begin
+		if(falling_edge(clk)) then
+			if(wsp = '1') then
+				shift_data <= input_data;
+			else
+				shift_data <= '0' & shift_data(15 downto 1);
+			end if;
+		end if;
+	end process;
+	sd <= shift_data(0);
 	
 end Behavioral;
