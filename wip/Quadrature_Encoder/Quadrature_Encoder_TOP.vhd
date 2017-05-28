@@ -3,7 +3,6 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity Quadrature_Encoder_TOP is
     Port ( clk 	: in  	STD_LOGIC;
-			  reset	: in  	STD_LOGIC;
 			  A 		: in  	STD_LOGIC;
            B 		: in  	STD_LOGIC;
            Up 		: out  	STD_LOGIC;
@@ -26,7 +25,8 @@ begin
 			delay_A(1) <= A;
 		end if;
 	end process;
-	pulse_A <= delay_A(1) and (not delay_A(0));
+	pulse_A <= delay_A(1) xor delay_A(0);		--For a rotary encoder that toggles its output (KY-040).
+	--pulse_a <= delay_A(1) and not delay_A(0);		--For a rotary encoder that makes a pulse on its output.
 	
 	proc_sync_B: process(clk)
 		begin
@@ -38,7 +38,7 @@ begin
 	turn: process(clk)
 		begin
 		if(pulse_A='1') then
-			if(delay_B='1') then
+			if((delay_A(0)='1' and delay_B='0') or (delay_A(0)='0' and delay_B='1')) then
 				sig_up <= '0';
 				sig_down <= '1';
 			else
@@ -52,4 +52,5 @@ begin
 	end process;
 	Up <= sig_up;
 	Down <= sig_down;
+	
 end Behavioral;

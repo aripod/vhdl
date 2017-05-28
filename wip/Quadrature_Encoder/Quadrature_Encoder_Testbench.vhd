@@ -1,6 +1,6 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
-
+ 
 ENTITY Quadrature_Encoder_Testbench IS
 END Quadrature_Encoder_Testbench;
  
@@ -11,7 +11,6 @@ ARCHITECTURE behavior OF Quadrature_Encoder_Testbench IS
     COMPONENT Quadrature_Encoder_TOP
     PORT(
          clk : IN  std_logic;
-         reset : IN  std_logic;
          A : IN  std_logic;
          B : IN  std_logic;
          Up : OUT  std_logic;
@@ -22,7 +21,6 @@ ARCHITECTURE behavior OF Quadrature_Encoder_Testbench IS
 
    --Inputs
    signal clk : std_logic := '0';
-   signal reset : std_logic := '0';
    signal A : std_logic := '0';
    signal B : std_logic := '0';
 
@@ -38,7 +36,6 @@ BEGIN
 	-- Instantiate the Unit Under Test (UUT)
    uut: Quadrature_Encoder_TOP PORT MAP (
           clk => clk,
-          reset => reset,
           A => A,
           B => B,
           Up => Up,
@@ -60,18 +57,6 @@ BEGIN
    begin		
       -- hold reset state for 100 ns.
       wait for 20 ns;	
-
-      reset <= '0';
-		
-		-- Clockwise
-		A <= '1';
-		wait for 100 ns;
-		B <= '1';
-		wait for 200 ns;
-		A <= '0';
-		wait for 100 ns;
-		B <= '0';
-		wait for 400 ns;
 		
 		-- Clockwise
 		A <= '1';
@@ -91,6 +76,17 @@ BEGIN
 		B <= '0';
 		wait for 100 ns;
 		A <= '0';
+		wait for 400 ns;
+		
+		-- Clockwise
+		A <= '1';
+		wait for 100 ns;
+		B <= '1';
+		wait for 200 ns;
+		B <= '0';
+		wait for 100 ns;
+		A <= '0';
+		wait for 400 ns;
 
       wait;
    end process;
