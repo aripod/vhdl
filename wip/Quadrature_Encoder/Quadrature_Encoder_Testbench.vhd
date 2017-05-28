@@ -1,6 +1,6 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
- 
+
 ENTITY Quadrature_Encoder_Testbench IS
 END Quadrature_Encoder_Testbench;
  
@@ -8,7 +8,7 @@ ARCHITECTURE behavior OF Quadrature_Encoder_Testbench IS
  
     -- Component Declaration for the Unit Under Test (UUT)
  
-    COMPONENT Quadrature_Encoder
+    COMPONENT Quadrature_Encoder_TOP
     PORT(
          clk : IN  std_logic;
          reset : IN  std_logic;
@@ -36,7 +36,7 @@ ARCHITECTURE behavior OF Quadrature_Encoder_Testbench IS
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
-   uut: Quadrature_Encoder PORT MAP (
+   uut: Quadrature_Encoder_TOP PORT MAP (
           clk => clk,
           reset => reset,
           A => A,
@@ -58,27 +58,38 @@ BEGIN
    -- Stimulus process
    stim_proc: process
    begin		
-		wait for 25 ns;
-		
-		reset <= '0';
+      -- hold reset state for 100 ns.
+      wait for 20 ns;	
+
+      reset <= '0';
 		
 		-- Clockwise
 		A <= '1';
-		wait for 10 ns;
+		wait for 100 ns;
 		B <= '1';
-		wait for 20 ns;
+		wait for 200 ns;
 		A <= '0';
-		wait for 10 ns;
+		wait for 100 ns;
 		B <= '0';
-		wait for 40 ns;
+		wait for 400 ns;
+		
+		-- Clockwise
+		A <= '1';
+		wait for 100 ns;
+		B <= '1';
+		wait for 200 ns;
+		A <= '0';
+		wait for 100 ns;
+		B <= '0';
+		wait for 400 ns;
 		
 		-- Counter-Clockwise
 		B <= '1';
-		wait for 10 ns;
+		wait for 100 ns;
 		A <= '1';
-		wait for 20 ns;
+		wait for 200 ns;
 		B <= '0';
-		wait for 10 ns;
+		wait for 100 ns;
 		A <= '0';
 
       wait;
