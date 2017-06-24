@@ -21,15 +21,17 @@ The design flow is the following:
     2. Save it in *Repository_name/src/bd**.
     3. Name it **design_1.tcl***.
 4. Modify the build script
-    1. Replace the corresponding lines so they look like this:
+    1. At the begining of the script, add the following line:
+        `set project_name NAME_OF_THE_PROJECT`
+    3. Replace the corresponding lines so they look like this:
         ```
         # Set the reference directory to where the script is
         set origin_dir [file dirname [info script]]
         
         # Create project
-        create_project myproject $origin_dir/myproject
+        create_project $project_name $origin_dir/$project_name
         ```
-    2. At the end of the script, add the following lines
+    3. At the end of the script, add the following lines
         ````
         # Create block design
          source $origin_dir/src/bd/design_1.tcl
@@ -40,6 +42,7 @@ The design flow is the following:
          
          regenerate_bd_layout
         ````
+    4. Replace the name of the project given in Vivado with `project_name` to have a more general script.
 5. Copy the files created and edited in SKD (under the src folder) to Repository_name/src/sdk_src.
 6. Commit the following files and/or folders:
     1. build.tcl
