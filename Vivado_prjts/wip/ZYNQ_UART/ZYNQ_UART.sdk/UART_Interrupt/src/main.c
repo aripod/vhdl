@@ -4,18 +4,17 @@
 #include "xuartps.h"
 #include "xscugic.h"
 
-#define INTC				XScuGic
 #define UART_DEVICE_ID		XPAR_XUARTPS_0_DEVICE_ID
 #define INTC_DEVICE_ID		XPAR_SCUGIC_SINGLE_DEVICE_ID
 #define UART_INT_IRQ_ID		XPAR_XUARTPS_1_INTR
 
-#define RECV_BUFFER_SIZE	512
+#define RECV_BUFFER_SIZE	50
 
 XUartPs UartPs	;			/* Instance of the UART Device */
-INTC InterruptController;	/* Instance of the Interrupt Controller */
+static XScuGic InterruptController;	/* Instance of the Interrupt Controller */
 
-int UartIntrInit(INTC *IntcInstPtr, XUartPs *UartInstPtr, u16 DeviceId, u16 UartIntrId);
-static int SetupInterruptSystem(INTC *IntcInstancePtr, XUartPs *UartInstancePtr, u16 UartIntrId);
+int UartIntrInit(XScuGic *IntcInstPtr, XUartPs *UartInstPtr, u16 DeviceId, u16 UartIntrId);
+static int SetupInterruptSystem(XScuGic *IntcInstancePtr, XUartPs *UartInstancePtr, u16 UartIntrId);
 void UARTHandler(void *CallBackRef, u32 Event, unsigned int EventData);
 
 u8 end = 0, UART_newData=0;
@@ -37,7 +36,7 @@ int main(void)
 		if(UART_newData==1)
 		{
 			// Process the received data.
-
+			xil_printf("Buffer: %s\n", RecvBuffer);
 			UART_newData = 0;
 		}
 	}
@@ -45,7 +44,7 @@ int main(void)
 	return 0;
 }
 
-int UartIntrInit(INTC *IntcInstPtr, XUartPs *UartInstPtr, u16 DeviceId, u16 UartIntrId)
+int UartIntrInit(XScuGic *IntcInstPtr, XUartPs *UartInstPtr, u16 DeviceId, u16 UartIntrId)
 {
 	int Status;
 	XUartPs_Config *Config;
@@ -101,12 +100,45 @@ int UartIntrInit(INTC *IntcInstPtr, XUartPs *UartInstPtr, u16 DeviceId, u16 Uart
 
 	XUartPs_SetOperMode(UartInstPtr, XUARTPS_OPER_MODE_NORMAL);
 
+	/*
+	 * Set the receiver timeout. If it is not set, and the last few bytes
+	 * of data do not trigger the over-water or full interrupt, the bytes
+	 * will not be received. By default it is disabled.
+	 *
+	 * The setting of 8 will timeout after 8 x 4 = 32 character times.
+	 * Increase the time out value if baud rate is high, decrease it if
+	 * baud rate is low.
+	 */
+	XUartPs_SetRecvTimeout(UartInstPtr, 8);
+
 	return XST_SUCCESS;
 }
 
-static int SetupInterruptSystem(INTC *IntcInstancePtr, XUartPs *UartInstancePtr, u16 UartIntrId)
+static int SetupInterruptSystem(XScuGic *IntcInstancePtr, XUartPs *UartInstancePtr, u16 UartIntrId)
 {
 	int Status;
+	XScuGic_Config *IntcConfig; /* Config for interrupt controller */
+
+
+	/* Initialize the interrupt controller driver */
+	IntcConfig = XScuGic_LookupConfig(INTC_DEVICE_ID);
+	if (NULL == IntcConfig) {
+		return XST_FAILURE;
+	}
+
+	Status = XScuGic_CfgInitialize(IntcInstancePtr, IntcConfig,
+					IntcConfig->CpuBaseAddress);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+
+	/*
+	 * Connect the interrupt controller interrupt handler to the
+	 * hardware interrupt handling logic in the processor.
+	 */
+	Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+				(Xil_ExceptionHandler) XScuGic_InterruptHandler,
+				IntcInstancePtr);
 
 	/*
 	 * Connect a device driver handler that will be called when an
@@ -124,21 +156,18 @@ static int SetupInterruptSystem(INTC *IntcInstancePtr, XUartPs *UartInstancePtr,
 	XScuGic_Enable(IntcInstancePtr, UartIntrId);
 
 	/* Enable interrupts */
-	 Xil_ExceptionEnable();
+		 Xil_ExceptionEnable();
 
 	 return XST_SUCCESS;
 }
 
 void UARTHandler(void *CallBackRef, u32 Event, unsigned int EventData)
 {
-	/* All of the data has been received */
+	XUartPs_Recv(&UartPs, RecvBuffer, RECV_BUFFER_SIZE);
+	UART_newData = 1;
+	/* All of the data has been received
 	if (Event == XUARTPS_EVENT_RECV_DATA) {
-		TotalReceivedCount = EventData;
-	}
-
-	if(TotalReceivedCount<=RECV_BUFFER_SIZE)
-	{
-		XUartPs_Recv(&UartPs, RecvBuffer, TotalReceivedCount);
 		UART_newData = 1;
-	}
+		TotalReceivedCount = EventData;
+	}*/
 }
