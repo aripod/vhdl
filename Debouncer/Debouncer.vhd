@@ -17,7 +17,7 @@ architecture Behavioral of Debouncer is
 	signal delay : STD_LOGIC_VECTOR (1 downto 0);
 	signal rise_edge : STD_LOGIC;
 	signal count_enable : STD_LOGIC := '0';
-	signal timer_count : STD_LOGIC_VECTOR (integer(ceil(log2(real(T))))-1 downto 0) := (others=>'0');
+	signal timer_count : STD_LOGIC_VECTOR (log2(T) downto 0) := (others=>'0');
 	signal reset, debounce : STD_LOGIC := '0';
 begin
 
