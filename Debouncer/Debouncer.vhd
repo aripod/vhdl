@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
-use IEEE.MATH_REAL.all;
+use work.functions.all;
 
 entity Debouncer is
 	Generic ( T : integer := 10);	-- Time (in ms) for the delay.
