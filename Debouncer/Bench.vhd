@@ -72,6 +72,27 @@ BEGIN
 		wait for 250 us;
 		input <= '0';
 
+        wait for 5 ms;
+        		input <= '1';
+        wait for 500 us;
+        input <= '0';
+        wait for 150 us;
+        input <= '1';
+        wait for 250 us;
+        input <= '0';
+        wait for 200 us;
+        input <= '1';
+        
+        wait for 3 ms;
+        input <= '0';
+        wait for 200 us;
+        input <= '1';
+        wait for 500 us;
+        input <= '0';
+        wait for 150 us;
+        input <= '1';
+        wait for 250 us;
+        input <= '0';
       wait;
    end process;
 END;
